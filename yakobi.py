@@ -16,6 +16,15 @@ B = [
 ]
 
 
+def nevyazka(A, B, X):
+    r = np.dot(A, X) - B
+    R = 0
+    for i in range(len(r)):
+        R += r[i] ** 2
+    R = np.sqrt(R)
+    return R
+
+
 def yacobi(A, B, eps):
     n = len(A)
     D = np.eye(n)
@@ -36,6 +45,7 @@ def yacobi(A, B, eps):
     print("Метод Якоби.")
     print("X:", X)
     print("epsilon =", eps)
+    print("Невязка: r = ", nevyazka(A, B, X))
 
 
 yacobi(A, B, 0.001)
