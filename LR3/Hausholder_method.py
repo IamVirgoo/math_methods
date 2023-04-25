@@ -25,8 +25,14 @@ def hausholder(matrix_a, eps):
     if delta >= eps:
         hausholder(matrix_b, eps)
     else:
+        print("Matrix Eigenvalues:", '\n')
         for i in range(len(matrix_a)):
             print(matrix_b[i][i])
+        print('\n', "Matrix A:", '\n', matrix_a, '\n')
+        print("Matrix P:", '\n', matrix_p, '\n')
+        print("Matrix Q:", '\n', matrix_q, '\n')
+        print("Matrix R:", '\n', matrix_r, '\n')
+        print("Matrix B:", '\n', matrix_b, '\n')
 
 
 hausholder(matrix_new, 0.0001)

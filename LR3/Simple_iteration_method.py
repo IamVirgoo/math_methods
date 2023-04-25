@@ -8,7 +8,9 @@ def simple_iteration(matrix_a, eps):
     matrix_l = matrix_y @ matrix_x
     matrix_x = matrix_y / np.linalg.norm(matrix_y)
     matrix_lp = matrix_l
+    counter = 0
     while True:
+        counter += 1
         matrix_y = matrix_a @ matrix_x
         matrix_l = matrix_y @ matrix_x
         matrix_x = matrix_y / np.linalg.norm(matrix_y)
@@ -16,6 +18,7 @@ def simple_iteration(matrix_a, eps):
             break
         matrix_lp = matrix_l
     print("Maximum eigenvalue by abs: ", matrix_l)
+    print("Count:", counter)
 
 
 simple_iteration(matrix_new, 0.0001)
