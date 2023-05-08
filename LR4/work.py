@@ -2,10 +2,15 @@ import plotly.graph_objs as go
 from math import cos, exp, sqrt
 from sympy import *
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def function(x):
     return (cos(x) ** 2) - 0.1 * exp(x)
+
+
+def function_(x):
+    return sqrt(x) - (x ** -1) * log(x) + 4 - 1.5
 
 
 def system_function_first(x1, x2):
@@ -76,8 +81,8 @@ def simple_iteration(funct, left_bound=None, right_bound=None, eps=0.00001):
         max_arg = right_bound
     dif = [diff(f, arg).subs(arg, i) for i in np.arange(left_bound, right_bound, 0.001)]
     k = max(dif, key=abs) / 2
-    print("Q: ", max(dif, key=abs))
-    print(k)
+    '''print("Q: ", max(dif, key=abs))
+    print(k)'''
     phi = arg - funct(arg) / k
     x_p = N(phi.subs(arg, right_bound))
     x = N(phi.subs(arg, x_p))
@@ -155,6 +160,23 @@ print("Двуступенчатый метод Ньютона: ", nyuton_double_
 Fs1_x2 = solve(function_system_first, x2)[0]
 Fs2_x2 = solve(function_system_second, x2)[0]
 
+
+def graph():
+    xs = list(np.arange(-10, 10, 0.1))
+
+    ys1 = [complex(Fs1_x2.subs(x1, x)).real for x in xs]
+    ys2 = [complex(Fs2_x2.subs(x1, x)).real for x in xs]
+
+    plt.plot(xs, ys1, label='')
+    plt.plot(xs, ys2, label='')
+
+    plt.legend()
+    plt.title('Graphics of y1 and y2')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+
+
 xs = list(np.arange(-10, 10, 0.1))
 
 ys1 = [complex(Fs1_x2.subs(x1, x)).real for x in xs]
@@ -179,9 +201,13 @@ for f1 in F1_x2:
         ys1 = [complex(f1.subs(xS0, x)) for x in xs]
         ys2 = [complex(f2.subs(xS0, x)) for x in xs]
 
-        fig.add_trace(go.Scatter3d(x=xs, y=[i.real for i in ys1], z=[i.imag for i in ys1], line=dict(color="red")))
-        fig.add_trace(go.Scatter3d(x=xs, y=[i.real for i in ys2], z=[i.imag for i in ys2], line=dict(color="green")))
-fig.show()
+
+        plt.plot(xs, [i.real for i in ys1], label='')
+        plt.plot(xs, [i.real for i in ys2], label='')
+
+        """fig.add_trace(go.Scatter(x=xs, y=[i.real for i in ys1], line=dict(color="red")))
+        fig.add_trace(go.Scatter3d(x=xs, y=[i.real for i in ys2], line=dict(color="green")))"""
+plt.show()
 
 
 '''rect1 = (-0.2, -0.1, 2.2, 2.3)
@@ -196,8 +222,7 @@ def zeidel(funcs, eps=0.000001):
     for x in np.arange(rect[0], rect[1], abs(rect[0] - rect[1]) / 10):
         for y in np.arange(rect[2], rect[3], abs(rect[2] - rect[3]) / 10):
             yac = np.array([[float(el.subs(x_ss[0], x).subs(x_ss[1], y)) for el in line] for line in yacobi])
-            if max([sum(map(abs, i)) for i in yac]) >= 1:
-                print('Error')
+            if max([sum(map(abs, i)) for i in yac]) >= 1:                print('Error')
                 return
     args = [rect[0], rect[2]]
     las_args = [rect[0], rect[2]]
@@ -230,3 +255,57 @@ def grad_descent(funcs, eps=0.00001, alpha=0.1):
 
 
 print("Метод Градиентного спуска: ", grad_descent((function_system_first, function_system_second)))
+
+"""
+const int n = 5; // число точек
+double X[n] = {0.0, 1.0, 2.0, 3.0, 4.0}; // x координаты точек
+double Y[n] = {1.0, 4.0, 2.0, 5.0, 3.0}; // y координаты точек
+
+double Stirling[n][n]; // многочлен Стирлинга
+double h = X[1] - X[0]; // шаг на сетке
+
+// вычисляет многочлен Стирлинга для заданных точек
+void calc_stirling() {
+    // инициализируем первый столбец
+     for (int i = 0; i < n; i++) {
+        Stirling[i][i] = Y[i];
+    }
+
+    // заполняем таблицу коэффициентов многочлена
+    for (int j = 1; j < n; j++) {
+        for (int i = j; i < n; i++) {
+            Stirling[i][j] = Stirling[i][j-1] - Stirling[i-1][j-1];
+        }
+    }
+}
+
+// вычисляет значение многочлена Стирлинга в точке x
+double k(int j, double x) {
+    double t = (x - X[0])/h;
+    double res = 0;
+    double p = 1;
+
+    for (int i = 0; i <= j; i++) {
+        res += Stirling[i][j]*p;
+        p *= (t - i + 1)/i;
+    }
+    return res;
+}
+
+// вычисляет значение интерполяционного многочлена в точке x
+double interpolate(double x) {
+    double res = 0;
+    for (int j = 0; j < n; j++) {
+        res += k(j, x);
+    }
+    return res;
+}
+
+int main() {
+    calc_stirling(); // вычисляем многочлен Стирлинга
+    double x = 2.5; // точка, в которой мы будем интерполировать функцию
+    double y = interpolate(x); // вычисляем значение интерполяционного многочлена в точке x
+    cout << "Значение функции в точке " << x << " равно " << y << endl;
+    return 0;
+}
+"""
